@@ -72,6 +72,16 @@ public class PlayerFrame extends JFrame {
             }
 
             @Override
+            public void finishSong() {
+                musicSeekbar.setValue(0);
+                titleLabel.setText("");
+                artistLabel.setText("");
+                backgroundPanel.setBackgroundImage(null);
+                albumartLabel.setIcon(null);
+                repaint();
+            }
+
+            @Override
             public void initSong(String songName, String artistName) {
                 titleLabel.setText(songName);
                 artistLabel.setText(artistName);
@@ -79,19 +89,18 @@ public class PlayerFrame extends JFrame {
 
             @Override
             public void getAlbumartImage(BufferedImage albumartImage) {
-                BufferedImage buffered = albumartImage;
-                Image albumartimage = buffered.getScaledInstance(310,
+                Image albumartimage = albumartImage.getScaledInstance(310,
                         310, Image.SCALE_SMOOTH);
                 albumartLabel.setIcon(new ImageIcon(albumartimage));
                 long startTime = System.currentTimeMillis();
                 System.out.println(startTime);
                 BoxBlurFilter boxBlurFilter = new BoxBlurFilter();
                 boxBlurFilter.setRadius(100);
-                boxBlurFilter.filter(buffered, buffered);
+                boxBlurFilter.filter(albumartImage, albumartImage);
                 long endTime = System.currentTimeMillis();
                 System.out.println(endTime);
                 System.out.println(endTime - startTime);
-                backgroundPanel.setBackgroundImage(buffered);
+                backgroundPanel.setBackgroundImage(albumartImage);
                 invalidate();
                 repaint();
             }

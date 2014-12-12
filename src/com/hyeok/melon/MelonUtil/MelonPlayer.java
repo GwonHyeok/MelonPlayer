@@ -62,6 +62,7 @@ public class MelonPlayer {
                     while (!player.isComplete()) {
                         playerSeekListener.getPosition((player.getPosition() / 1000) * Integer.parseInt(bitrate) * 1000 / 8);
                     }
+                    playerSeekListener.finishSong();
                 }
             }.start();
         }
@@ -111,6 +112,8 @@ public class MelonPlayer {
         public void getPosition(int position);
 
         public void startSong(int start, int end);
+
+        public void finishSong();
 
         public void initSong(String songName, String artistName);
 
