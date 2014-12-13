@@ -2,6 +2,7 @@ package com.hyeok.melon.UI;
 
 import com.hyeok.melon.Exception.LoginFailException;
 import com.hyeok.melon.Melon;
+import com.hyeok.melon.MelonUtil.DatabaseUtil;
 import com.hyeok.melon.MelonUtil.MemberInfo;
 
 import javax.swing.*;
@@ -25,7 +26,6 @@ public class LoginFrame extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setVisible(true);
 
         loginButton.addActionListener(new ActionListener() {
             @Override
@@ -53,7 +53,9 @@ public class LoginFrame extends JFrame {
             melon.Login();
             MemberInfo.getInstance().setKeyCookie(melon.getKeyCookie());
             loginStatus.isLoginSuccess(true);
-
+            if (CheckBox.isSelected()) {
+                DatabaseUtil.getInstance().updateLoginData();
+            }
             System.out.println("Success To Login");
             System.out.println("melon KeyCookie : " + melon.getKeyCookie());
         } catch (LoginFailException e) {

@@ -10,6 +10,8 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="MelonLibrary" level="project" />
     <orderEntry type="library" name="jl1.0.1" level="project" />
+    <orderEntry type="library" name="mysql-connector-java-5.1.30-bin" level="project" />
+    <orderEntry type="library" name="sqlite-jdbc-3.7.15-M1" level="project" />
   </component>
 </module>
 
