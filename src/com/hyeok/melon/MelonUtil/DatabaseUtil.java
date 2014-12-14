@@ -143,6 +143,6 @@ public class DatabaseUtil {
 
     private void Log(String message) {
         String TAG = "DatabaseUtil";
-        System.out.println(TAG + " : " + message);
+        Log.v(TAG, message);
     }
 }

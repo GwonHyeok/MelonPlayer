@@ -3,6 +3,7 @@ package com.hyeok.melon.UI;
 import com.hyeok.melon.CustomSwingContent.RealtimeBackgroundPanel;
 import com.hyeok.melon.ImageFilterUtil.BoxBlurFilter;
 import com.hyeok.melon.MelonUtil.DatabaseUtil;
+import com.hyeok.melon.MelonUtil.Log;
 import com.hyeok.melon.MelonUtil.MelonPlayer;
 import com.hyeok.melon.SearchData;
 
@@ -77,13 +78,13 @@ public class PlayerFrame extends JFrame {
                         310, Image.SCALE_SMOOTH);
                 albumartLabel.setIcon(new ImageIcon(albumartimage));
                 long startTime = System.currentTimeMillis();
-                System.out.println(startTime);
+                Log("Blur start Time = " + startTime);
                 BoxBlurFilter boxBlurFilter = new BoxBlurFilter();
                 boxBlurFilter.setRadius(100);
                 boxBlurFilter.filter(albumartImage, albumartImage);
                 long endTime = System.currentTimeMillis();
-                System.out.println(endTime);
-                System.out.println(endTime - startTime);
+                Log("Blur end Time = " + endTime);
+                Log("Blur time is " + (endTime - startTime) + "ms");
                 backgroundPanel.setBackgroundImage(albumartImage);
                 invalidate();
                 repaint();
@@ -95,7 +96,7 @@ public class PlayerFrame extends JFrame {
         SearchFrame.getInstance().setlistClickListener(new SearchFrame.listClickListener() {
             @Override
             public void selectNewPlaySong(final SearchData songData) {
-                System.out.println("clicked Song Name : " + songData.getSongName());
+                Log("clicked Song Name : " + songData.getSongName());
                 DatabaseUtil.getInstance().insertSongData(songData);
                 ListFrame.getInstance().refreshTableData();
                 MelonPlayer.getInstance().playSong(songData);
@@ -127,6 +128,11 @@ public class PlayerFrame extends JFrame {
         backgroundPanel.setBounds(0, 0, 340, 600);
         rootPanel.add(backgroundPanel);
         rootPanel.setBackground(null);
+    }
+
+    private void Log(String message) {
+        String TAG = "PlayerFrame";
+        Log.v(TAG, message);
     }
 
     private void setButtonListener() {

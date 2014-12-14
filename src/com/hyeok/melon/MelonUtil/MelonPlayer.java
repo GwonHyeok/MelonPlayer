@@ -40,7 +40,7 @@ public class MelonPlayer {
     }
 
     public void stopSong() {
-        System.out.println("interruptSong");
+        Log("interruptSong");
         if (playSongThread != null) {
             player.close();
             playSongThread = null;
@@ -89,7 +89,7 @@ public class MelonPlayer {
                 urlConn.setRequestMethod("GET");
                 urlConn.setRequestProperty("Range", "bytes=0");
                 urlConn.setInstanceFollowRedirects(false);
-                System.out.println("Content Length : " + urlConn.getContentLengthLong());
+                Log("Content Length : " + urlConn.getContentLengthLong() + "bytes");
                 if (playerSeekListener != null) {
                     playerSeekListener.startSong(0, urlConn.getContentLength());
                 }
@@ -104,6 +104,11 @@ public class MelonPlayer {
             }
 
         }
+    }
+
+    private void Log(String message) {
+        String TAG = "MelonPlayer";
+        Log.v(TAG, message);
     }
 
     public void setPlayerSeekListener(MelonPlayerSeekListener playerSeekListener) {
