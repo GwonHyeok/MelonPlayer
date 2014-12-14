@@ -3,6 +3,7 @@ package com.hyeok.melon.UI;
 import com.hyeok.melon.CustomSwingContent.MelonSearchCellRenderer;
 import com.hyeok.melon.CustomSwingContent.MelonSearchListModel;
 import com.hyeok.melon.MelonSearch;
+import com.hyeok.melon.SearchData;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -17,7 +18,7 @@ public class SearchFrame extends JFrame {
     private JRadioButton AccuracyradioButton;
     private JRadioButton RecentradioButton;
     private JRadioButton PopularradioButton;
-    private JList<MelonSearch.SearchData> list1;
+    private JList<SearchData> list1;
     private JTextField songTextField;
     private JButton SearchButton;
     private JPanel rootPanel;
@@ -75,7 +76,7 @@ public class SearchFrame extends JFrame {
                 melonSearch.setSongName(songName);
                 melonSearch.Search();
                 MelonSearchListModel listModel = new MelonSearchListModel();
-                for (MelonSearch.SearchData searchData : melonSearch.getAllData()) {
+                for (SearchData searchData : melonSearch.getAllData()) {
                     listModel.addElement(searchData);
                 }
                 list1.setCellRenderer(new MelonSearchCellRenderer());
@@ -96,6 +97,6 @@ public class SearchFrame extends JFrame {
     }
 
     public interface listClickListener {
-        public void selectNewPlaySong(MelonSearch.SearchData songData);
+        public void selectNewPlaySong(SearchData songData);
     }
 }

@@ -1,10 +1,13 @@
 package com.hyeok.melon.MelonUtil;
 
+import com.hyeok.melon.SearchData;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
 
 /**
  * Created by GwonHyeok on 14. 12. 14..
@@ -18,8 +21,10 @@ public class DatabaseUtil {
     }
 
     public synchronized static DatabaseUtil getInstance() {
-        if (instance == null) {
-            instance = new DatabaseUtil();
+        synchronized (DatabaseUtil.class) {
+            if (instance == null) {
+                instance = new DatabaseUtil();
+            }
         }
         return instance;
     }
@@ -45,6 +50,48 @@ public class DatabaseUtil {
             return false;
         }
         return false;
+    }
+
+    public void insertSongData(SearchData songData) {
+        try {
+            int row = 1;
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM playlist");
+            while (resultSet.next()) {
+                row++;
+            }
+            statement.execute("INSERT INTO playlist VALUES ('" + row + "', '" + songData.getSID() + "', '" + songData.getSongName()
+                    + "', '" + songData.getSinger() + "', '" + songData.getAlbumart() + "');");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deletePlayList(ArrayList<indexSearchData> datas) {
+        try {
+            for (indexSearchData rowData : datas) {
+                String sql = "DELETE FROM playlist WHERE id=" + rowData.getId() + ";";
+                System.out.println(sql);
+                Statement statement = connection.createStatement();
+                statement.execute(sql);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ArrayList<indexSearchData> getPlaylistData() {
+        ArrayList<indexSearchData> datas = new ArrayList<indexSearchData>();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM playlist");
+            while (resultSet.next()) {
+                datas.add(new indexSearchData(resultSet.getInt(1), resultSet.getString(3), resultSet.getString(2), resultSet.getString(5), resultSet.getString(4)));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return datas;
     }
 
     public void updateLoginData() {

@@ -2,31 +2,15 @@ package com.hyeok.melon.UI;
 
 import com.hyeok.melon.CustomSwingContent.RealtimeBackgroundPanel;
 import com.hyeok.melon.ImageFilterUtil.BoxBlurFilter;
-import com.hyeok.melon.ImageFilterUtil.GaussianFilter;
-import com.hyeok.melon.MelonSearch;
-import com.hyeok.melon.MelonSong;
+import com.hyeok.melon.MelonUtil.DatabaseUtil;
 import com.hyeok.melon.MelonUtil.MelonPlayer;
-import com.hyeok.melon.MelonUtil.MemberInfo;
-import javafx.scene.effect.BoxBlur;
-import javazoom.jl.decoder.JavaLayerException;
-import javazoom.jl.player.Player;
+import com.hyeok.melon.SearchData;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.RandomAccess;
 
 /**
  * Created by GwonHyeok on 14. 12. 11..
@@ -110,8 +94,10 @@ public class PlayerFrame extends JFrame {
     private void setSearchlistListener() {
         SearchFrame.getInstance().setlistClickListener(new SearchFrame.listClickListener() {
             @Override
-            public void selectNewPlaySong(final MelonSearch.SearchData songData) {
+            public void selectNewPlaySong(final SearchData songData) {
                 System.out.println("clicked Song Name : " + songData.getSongName());
+                DatabaseUtil.getInstance().insertSongData(songData);
+                ListFrame.getInstance().refreshTableData();
                 MelonPlayer.getInstance().playSong(songData);
             }
         });
