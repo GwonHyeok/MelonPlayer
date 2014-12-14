@@ -3,9 +3,9 @@ package com.hyeok.melon.MelonUtil;
 import com.hyeok.melon.SearchData;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -123,7 +123,7 @@ public class DatabaseUtil {
             if (databaseFile.isFile()) {
                 Log("DatabaseFile Exist");
             } else {
-                FileInputStream fileinput = new FileInputStream(DatabaseUtil.class.getResource("/res/database/MelonPlayer.db").getFile());
+                InputStream fileinput = getClass().getResourceAsStream("/res/database/MelonPlayer.db");
                 FileOutputStream fileOutput = new FileOutputStream(databaseFile);
                 byte[] buffer = new byte[1024];
                 int read_bytes;
