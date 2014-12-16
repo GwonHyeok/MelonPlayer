@@ -1,6 +1,7 @@
 package com.hyeok.melon.UI;
 
 import com.hyeok.melon.CustomSwingContent.MelonPlayListTableModel;
+import com.hyeok.melon.MelonSearch;
 import com.hyeok.melon.MelonUtil.DatabaseUtil;
 import com.hyeok.melon.MelonUtil.MelonPlayer;
 import com.hyeok.melon.MelonUtil.indexSearchData;
@@ -11,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -19,8 +21,8 @@ import java.util.ArrayList;
 public class ListFrame extends JFrame {
     private JPanel panel1;
     private JButton searchButton;
-    private JButton button2;
     private JTable table1;
+    private JButton topButton;
     private static ListFrame instance;
 
     private ListFrame() {
@@ -72,6 +74,31 @@ public class ListFrame extends JFrame {
                 searchFrame.setVisible(!searchFrame.isVisible());
             }
         });
+
+        topButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addTopSongList();
+            }
+        });
+    }
+
+    private void addTopSongList() {
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    MelonSearch.getinstance().Top100(MelonSearch.TOP100REALTIME);
+                    ArrayList<SearchData> top100Data = MelonSearch.getinstance().getAllData();
+                    for (SearchData searchData : top100Data) {
+                        DatabaseUtil.getInstance().insertSongData(searchData);
+                    }
+                    refreshTableData();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
     }
 
     public static synchronized ListFrame getInstance() {
