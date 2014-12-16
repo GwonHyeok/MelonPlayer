@@ -20,6 +20,7 @@ public class MelonPlayer {
     private MelonPlayerSeekListener playerSeekListener;
     private Thread playSongThread;
     private Player player;
+    private indexSearchData songData;
 
     private MelonPlayer() {
 
@@ -34,8 +35,13 @@ public class MelonPlayer {
 
     public void playSong(indexSearchData searchData) {
         stopSong();
+        this.songData = searchData;
         playSongThread = new Thread(new playRunnable(searchData));
         playSongThread.start();
+    }
+
+    public indexSearchData getSongData() {
+        return this.songData;
     }
 
     public void stopSong() {
@@ -63,7 +69,7 @@ public class MelonPlayer {
                             playerSeekListener.getPosition((player.getPosition() / 1000) * Integer.parseInt(bitrate) * 1000 / 8);
                         }
                     }
-                    playerSeekListener.finishSong(searchData);
+                    playerSeekListener.finishSong();
                 }
             }.start();
         }
@@ -101,7 +107,6 @@ public class MelonPlayer {
             } catch (JavaLayerException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
@@ -119,7 +124,7 @@ public class MelonPlayer {
 
         public void startSong(int start, int end);
 
-        public void finishSong(indexSearchData songData);
+        public void finishSong();
 
         public void initSong(String songName, String artistName);
 

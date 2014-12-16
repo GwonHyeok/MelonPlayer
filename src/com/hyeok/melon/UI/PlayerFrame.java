@@ -5,7 +5,6 @@ import com.hyeok.melon.ImageFilterUtil.BoxBlurFilter;
 import com.hyeok.melon.MelonUtil.DatabaseUtil;
 import com.hyeok.melon.MelonUtil.Log;
 import com.hyeok.melon.MelonUtil.MelonPlayer;
-import com.hyeok.melon.MelonUtil.indexSearchData;
 import com.hyeok.melon.SearchData;
 
 import javax.swing.*;
@@ -58,19 +57,8 @@ public class PlayerFrame extends JFrame {
             }
 
             @Override
-            public void finishSong(indexSearchData songData) {
-                int currentID = songData.getId();
-                int nextSongID = DatabaseUtil.getInstance().getNextSongID(currentID);
-                if (nextSongID == -1) {
-                    musicSeekbar.setValue(0);
-                    titleLabel.setText("");
-                    artistLabel.setText("");
-                    backgroundPanel.setBackgroundImage(null);
-                    albumartLabel.setIcon(null);
-                } else {
-                    MelonPlayer.getInstance().playSong(DatabaseUtil.getInstance().getSearchDataWithID(nextSongID));
-                }
-                repaint();
+            public void finishSong() {
+                checkNextSong();
             }
 
             @Override
@@ -141,6 +129,44 @@ public class PlayerFrame extends JFrame {
         Log.v(TAG, message);
     }
 
+    private void checkNextSong() {
+        try {
+            int currentID = MelonPlayer.getInstance().getSongData().getId();
+            int nextSongID = DatabaseUtil.getInstance().getNextSongID(currentID);
+            if (nextSongID == -1) {
+                resetSongInfoView();
+            } else {
+                MelonPlayer.getInstance().playSong(DatabaseUtil.getInstance().getSearchDataWithID(nextSongID));
+            }
+        } catch (NullPointerException e) {
+            /* 아직 음악이 실행 되지 않음 etc.. */
+        }
+        repaint();
+    }
+
+    private void checkPrevSong() {
+        try {
+            int currentID = MelonPlayer.getInstance().getSongData().getId();
+            int prevSongID = DatabaseUtil.getInstance().getPrevSongID(currentID);
+            if (prevSongID == -1) {
+                resetSongInfoView();
+            } else {
+                MelonPlayer.getInstance().playSong(DatabaseUtil.getInstance().getSearchDataWithID(prevSongID));
+            }
+        } catch (NullPointerException e) {
+            /* 아직 음악이 실행 되지 않음 etc.. */
+        }
+        repaint();
+    }
+
+    private void resetSongInfoView() {
+        musicSeekbar.setValue(0);
+        titleLabel.setText("");
+        artistLabel.setText("");
+        backgroundPanel.setBackgroundImage(null);
+        albumartLabel.setIcon(null);
+    }
+
     private void setButtonListener() {
         playlistButton.addActionListener(new ActionListener() {
             @Override
@@ -149,11 +175,21 @@ public class PlayerFrame extends JFrame {
                 listFrame.setVisible(!listFrame.isVisible());
             }
         });
+        nextButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                checkNextSong();
+            }
+        });
+        prevButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                checkPrevSong();
+            }
+        });
     }
 
     private void setContentImage() {
         Class<PlayerFrame> playerFrameClass = PlayerFrame.class;
     }
-
-
 }

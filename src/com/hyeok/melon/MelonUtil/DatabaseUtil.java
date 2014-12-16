@@ -120,6 +120,21 @@ public class DatabaseUtil {
         return nextSongID;
     }
 
+    public int getPrevSongID(int currentSongID) {
+        int prevSongID = -1;
+        try {
+            String sql = "SELECT * FROM playlist WHERE id < " + currentSongID + " ORDER BY id DESC";
+            Statement statement = connection.createStatement();
+            ResultSet resultset = statement.executeQuery(sql);
+            if (resultset.next()) {
+                prevSongID = resultset.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return prevSongID;
+    }
+
     public indexSearchData getSearchDataWithID(int id) {
         indexSearchData songData = null;
         try {
