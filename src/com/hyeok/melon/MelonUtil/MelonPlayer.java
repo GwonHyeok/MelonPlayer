@@ -79,6 +79,7 @@ public class MelonPlayer {
             try {
                 MelonSong melonSong = new MelonSong(MemberInfo.getInstance().getKeyCookie());
                 melonSong.getSongData(this.searchData.getSID());
+                Log(this.searchData.getId() + " : " + this.searchData.getSinger() + " - " + this.searchData.getSongName());
                 Image image = ImageIO.read(new URL(melonSong.getAlbumArtURL()));
                 BufferedImage buffered = (BufferedImage) image;
                 if (playerSeekListener != null) {
