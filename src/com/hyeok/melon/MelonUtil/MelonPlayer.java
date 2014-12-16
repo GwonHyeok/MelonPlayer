@@ -1,7 +1,6 @@
 package com.hyeok.melon.MelonUtil;
 
 import com.hyeok.melon.MelonSong;
-import com.hyeok.melon.SearchData;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 
@@ -33,7 +32,7 @@ public class MelonPlayer {
         return instance;
     }
 
-    public void playSong(SearchData searchData) {
+    public void playSong(indexSearchData searchData) {
         stopSong();
         playSongThread = new Thread(new playRunnable(searchData));
         playSongThread.start();
@@ -48,10 +47,10 @@ public class MelonPlayer {
     }
 
     private class playRunnable implements Runnable {
-        private SearchData searchData;
+        private indexSearchData searchData;
         private String bitrate;
 
-        public playRunnable(SearchData searchData) {
+        public playRunnable(indexSearchData searchData) {
             this.searchData = searchData;
         }
 
@@ -64,7 +63,7 @@ public class MelonPlayer {
                             playerSeekListener.getPosition((player.getPosition() / 1000) * Integer.parseInt(bitrate) * 1000 / 8);
                         }
                     }
-                    playerSeekListener.finishSong();
+                    playerSeekListener.finishSong(searchData);
                 }
             }.start();
         }
@@ -120,7 +119,7 @@ public class MelonPlayer {
 
         public void startSong(int start, int end);
 
-        public void finishSong();
+        public void finishSong(indexSearchData songData);
 
         public void initSong(String songName, String artistName);
 

@@ -105,6 +105,35 @@ public class DatabaseUtil {
 
     }
 
+    public int getNextSongID(int currentSongID) {
+        int nextSongID = -1;
+        try {
+            String sql = "SELECT * FROM playlist WHERE id > " + currentSongID;
+            Statement statement = connection.createStatement();
+            ResultSet resultset = statement.executeQuery(sql);
+            if (resultset.next()) {
+                nextSongID = resultset.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return nextSongID;
+    }
+
+    public indexSearchData getSearchDataWithID(int id) {
+        indexSearchData songData = null;
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM playlist WHERE id = " + id);
+            if (resultSet.next()) {
+                songData = new indexSearchData(resultSet.getInt(1), resultSet.getString(3), resultSet.getString(2), resultSet.getString(5), resultSet.getString(4));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return songData;
+    }
+
     public boolean connectDatabase() {
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:MelonPlayer.db");

@@ -5,6 +5,7 @@ import com.hyeok.melon.ImageFilterUtil.BoxBlurFilter;
 import com.hyeok.melon.MelonUtil.DatabaseUtil;
 import com.hyeok.melon.MelonUtil.Log;
 import com.hyeok.melon.MelonUtil.MelonPlayer;
+import com.hyeok.melon.MelonUtil.indexSearchData;
 import com.hyeok.melon.SearchData;
 
 import javax.swing.*;
@@ -57,12 +58,18 @@ public class PlayerFrame extends JFrame {
             }
 
             @Override
-            public void finishSong() {
-                musicSeekbar.setValue(0);
-                titleLabel.setText("");
-                artistLabel.setText("");
-                backgroundPanel.setBackgroundImage(null);
-                albumartLabel.setIcon(null);
+            public void finishSong(indexSearchData songData) {
+                int currentID = songData.getId();
+                int nextSongID = DatabaseUtil.getInstance().getNextSongID(currentID);
+                if (nextSongID == -1) {
+                    musicSeekbar.setValue(0);
+                    titleLabel.setText("");
+                    artistLabel.setText("");
+                    backgroundPanel.setBackgroundImage(null);
+                    albumartLabel.setIcon(null);
+                } else {
+                    MelonPlayer.getInstance().playSong(DatabaseUtil.getInstance().getSearchDataWithID(nextSongID));
+                }
                 repaint();
             }
 
@@ -99,7 +106,6 @@ public class PlayerFrame extends JFrame {
                 Log("clicked Song Name : " + songData.getSongName());
                 DatabaseUtil.getInstance().insertSongData(songData);
                 ListFrame.getInstance().refreshTableData();
-                MelonPlayer.getInstance().playSong(songData);
             }
         });
     }

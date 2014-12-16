@@ -46,7 +46,7 @@ public class ListFrame extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 if (e.getClickCount() == 2) {
-                    SearchData searchData = ((MelonPlayListTableModel) table1.getModel()).getSelectedData(table1.getSelectedRow());
+                    indexSearchData searchData = ((MelonPlayListTableModel) table1.getModel()).getSelectedData(table1.getSelectedRow());
                     MelonPlayer.getInstance().playSong(searchData);
                 } else if (e.getButton() == MouseEvent.BUTTON3) {
                     ArrayList<indexSearchData> datas = ((MelonPlayListTableModel) table1.getModel()).getSelectDataIndex(table1.getSelectedRows());

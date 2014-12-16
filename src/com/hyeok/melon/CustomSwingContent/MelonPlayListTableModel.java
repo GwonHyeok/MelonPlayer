@@ -1,7 +1,6 @@
 package com.hyeok.melon.CustomSwingContent;
 
 import com.hyeok.melon.MelonUtil.indexSearchData;
-import com.hyeok.melon.SearchData;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
@@ -42,7 +41,7 @@ public class MelonPlayListTableModel extends AbstractTableModel {
         return COLUMN[column];
     }
 
-    public SearchData getSelectedData(int rowIndex) {
+    public indexSearchData getSelectedData(int rowIndex) {
         return datas.get(rowIndex);
     }
 
