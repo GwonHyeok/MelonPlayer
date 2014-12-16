@@ -20,7 +20,11 @@ public class MelonPlayer {
     private MelonPlayerSeekListener playerSeekListener;
     private Thread playSongThread;
     private Player player;
+    private final Object playerLock = new Object();
     private indexSearchData songData;
+    private SongStatus songStatus;
+
+    private enum SongStatus {RESUME, PAUSE, PLAY, FINISH}
 
     private MelonPlayer() {
 
@@ -36,6 +40,7 @@ public class MelonPlayer {
     public void playSong(indexSearchData searchData) {
         stopSong();
         this.songData = searchData;
+        this.songStatus = SongStatus.PLAY;
         playSongThread = new Thread(new playRunnable(searchData));
         playSongThread.start();
     }
@@ -46,6 +51,7 @@ public class MelonPlayer {
 
     public void stopSong() {
         Log("interruptSong");
+        songStatus = SongStatus.FINISH;
         if (playSongThread != null) {
             player.close();
             playSongThread = null;
@@ -102,12 +108,44 @@ public class MelonPlayer {
                 final BufferedInputStream in = new BufferedInputStream(urlConn.getInputStream());
                 player = new Player(in);
                 broadcastPosition();
-                player.play();
+                while (songStatus != SongStatus.FINISH) {
+                    if (!player.play(1)) {
+                        player.close();
+                        break;
+                    }
+                    if (songStatus == SongStatus.PAUSE) {
+                        synchronized (playerLock) {
+                            try {
+                                playerLock.wait();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    } else if (songStatus == SongStatus.RESUME) {
+                        songStatus = SongStatus.PLAY;
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JavaLayerException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void pauseSong() {
+        synchronized (playerLock) {
+            Log("Pause Song");
+            this.songStatus = SongStatus.PAUSE;
+            playerLock.notify();
+        }
+    }
+
+    public void resumeSong() {
+        synchronized (playerLock) {
+            Log("Resume Song");
+            this.songStatus = SongStatus.RESUME;
+            playerLock.notify();
         }
     }
 

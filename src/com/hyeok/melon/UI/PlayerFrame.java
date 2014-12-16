@@ -27,6 +27,9 @@ public class PlayerFrame extends JFrame {
     private JButton playlistButton;
     private JSlider musicSeekbar;
     private RealtimeBackgroundPanel backgroundPanel;
+    private SongStatus songStatus;
+
+    private enum SongStatus {PLAY, PAUSE}
 
     public PlayerFrame() {
         super();
@@ -36,7 +39,6 @@ public class PlayerFrame extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
         setContentSpace();
-        setContentImage();
         setButtonListener();
         setSearchlistListener();
         setPlayerListener();
@@ -63,6 +65,7 @@ public class PlayerFrame extends JFrame {
 
             @Override
             public void initSong(String songName, String artistName) {
+                setPlayPauseButtonIcon(true);
                 titleLabel.setText(songName);
                 artistLabel.setText(artistName);
             }
@@ -165,6 +168,7 @@ public class PlayerFrame extends JFrame {
         artistLabel.setText("");
         backgroundPanel.setBackgroundImage(null);
         albumartLabel.setIcon(null);
+        setPlayPauseButtonIcon(false);
     }
 
     private void setButtonListener() {
@@ -187,9 +191,29 @@ public class PlayerFrame extends JFrame {
                 checkPrevSong();
             }
         });
+        play_pause_button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (songStatus == SongStatus.PLAY) {
+                    setPlayPauseButtonIcon(false);
+                    MelonPlayer.getInstance().pauseSong();
+                } else if (songStatus == SongStatus.PAUSE) {
+                    setPlayPauseButtonIcon(true);
+                    MelonPlayer.getInstance().resumeSong();
+                }
+            }
+        });
     }
 
-    private void setContentImage() {
-        Class<PlayerFrame> playerFrameClass = PlayerFrame.class;
+    private void setPlayPauseButtonIcon(boolean isPlay) {
+        ImageIcon imageIcon;
+        if (isPlay) {
+            songStatus = SongStatus.PLAY;
+            imageIcon = new ImageIcon(getClass().getResource("/res/theme/default/pause.png"));
+        } else {
+            songStatus = SongStatus.PAUSE;
+            imageIcon = new ImageIcon(getClass().getResource("/res/theme/default/play.png"));
+        }
+        play_pause_button.setIcon(imageIcon);
     }
 }
