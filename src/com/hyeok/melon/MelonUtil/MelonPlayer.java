@@ -19,7 +19,6 @@ public class MelonPlayer {
     public static MelonPlayer instance;
     private MelonPlayerSeekListener playerSeekListener;
     private Thread playSongThread;
-    private Player player;
     private final Object playerLock = new Object();
     private indexSearchData songData;
     private SongStatus songStatus;
@@ -49,35 +48,19 @@ public class MelonPlayer {
         return this.songData;
     }
 
-    public void stopSong() {
-        Log("interruptSong");
-        songStatus = SongStatus.FINISH;
-        if (playSongThread != null) {
-            player.close();
-            playSongThread = null;
-        }
-    }
-
     private class playRunnable implements Runnable {
         private indexSearchData searchData;
         private String bitrate;
+        private Player player;
 
         public playRunnable(indexSearchData searchData) {
             this.searchData = searchData;
         }
 
         private void broadcastPosition() {
-            new Thread() {
-                @Override
-                public void run() {
-                    if (player != null) {
-                        while (!player.isComplete()) {
-                            playerSeekListener.getPosition((player.getPosition() / 1000) * Integer.parseInt(bitrate) * 1000 / 8);
-                        }
-                    }
-                    playerSeekListener.finishSong();
-                }
-            }.start();
+            if (playerSeekListener != null) {
+                playerSeekListener.getPosition((player.getPosition() / 1000) * Integer.parseInt(bitrate) * 1000 / 8);
+            }
         }
 
         @Override
@@ -110,8 +93,12 @@ public class MelonPlayer {
                 broadcastPosition();
                 while (songStatus != SongStatus.FINISH) {
                     if (!player.play(1)) {
+                        playerSeekListener.finishSong();
+                        player.close();
+                        player = null;
                         break;
                     }
+                    broadcastPosition();
                     if (songStatus == SongStatus.PAUSE) {
                         synchronized (playerLock) {
                             try {
@@ -145,6 +132,15 @@ public class MelonPlayer {
             Log("Resume Song");
             this.songStatus = SongStatus.RESUME;
             playerLock.notify();
+        }
+    }
+
+    public void stopSong() {
+        Log("Stop Song");
+        if (playSongThread != null) {
+            while (playSongThread.isAlive()) {
+                this.songStatus = SongStatus.FINISH;
+            }
         }
     }
 
