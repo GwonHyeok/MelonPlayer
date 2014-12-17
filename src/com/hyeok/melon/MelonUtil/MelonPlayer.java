@@ -110,7 +110,6 @@ public class MelonPlayer {
                 broadcastPosition();
                 while (songStatus != SongStatus.FINISH) {
                     if (!player.play(1)) {
-                        player.close();
                         break;
                     }
                     if (songStatus == SongStatus.PAUSE) {
