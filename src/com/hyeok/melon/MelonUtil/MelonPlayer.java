@@ -22,6 +22,7 @@ public class MelonPlayer {
     private final Object playerLock = new Object();
     private indexSearchData songData;
     private SongStatus songStatus;
+    private Player player;
 
     private enum SongStatus {RESUME, PAUSE, PLAY, FINISH}
 
@@ -48,16 +49,24 @@ public class MelonPlayer {
         return this.songData;
     }
 
+    private class PlayNullException extends Exception {
+        public PlayNullException() {
+            super("Player is Null may be call StopSong Method");
+        }
+    }
+
     private class playRunnable implements Runnable {
         private indexSearchData searchData;
         private String bitrate;
-        private Player player;
 
         public playRunnable(indexSearchData searchData) {
             this.searchData = searchData;
         }
 
-        private void broadcastPosition() {
+        private void broadcastPosition() throws PlayNullException {
+            if (player == null) {
+                throw new PlayNullException();
+            }
             if (playerSeekListener != null) {
                 playerSeekListener.getPosition((player.getPosition() / 1000) * Integer.parseInt(bitrate) * 1000 / 8);
             }
@@ -90,7 +99,6 @@ public class MelonPlayer {
                 }
                 final BufferedInputStream in = new BufferedInputStream(urlConn.getInputStream());
                 player = new Player(in);
-                broadcastPosition();
                 while (songStatus != SongStatus.FINISH) {
                     if (!player.play(1)) {
                         playerSeekListener.finishSong();
@@ -115,6 +123,8 @@ public class MelonPlayer {
                 e.printStackTrace();
             } catch (JavaLayerException e) {
                 e.printStackTrace();
+            } catch (PlayNullException ignore) {
+                /* May call stop song method */
             }
         }
     }
@@ -138,9 +148,9 @@ public class MelonPlayer {
     public void stopSong() {
         Log("Stop Song");
         if (playSongThread != null) {
-            while (playSongThread.isAlive()) {
-                this.songStatus = SongStatus.FINISH;
-            }
+            this.songStatus = SongStatus.FINISH;
+            player = null;
+            playSongThread = null;
         }
     }
 
