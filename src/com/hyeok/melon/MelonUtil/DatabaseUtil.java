@@ -57,9 +57,14 @@ public class DatabaseUtil {
             int row = 1;
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT * FROM playlist");
+
+            /* Move To Last */
             while (resultSet.next()) {
-                row++;
+                /* Set Row ID is Last Song id + 1 */
+                row = resultSet.getInt(1) + 1;
             }
+
+            /* Add Song Data*/
             statement.execute("INSERT INTO playlist VALUES ('" + row + "', '" + songData.getSID() + "', '" + songData.getSongName()
                     + "', '" + songData.getSinger() + "', '" + songData.getAlbumart() + "');");
         } catch (SQLException e) {

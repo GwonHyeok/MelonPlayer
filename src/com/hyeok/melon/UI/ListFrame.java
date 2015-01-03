@@ -6,6 +6,7 @@ import com.hyeok.melon.MelonUtil.DatabaseUtil;
 import com.hyeok.melon.MelonUtil.MelonPlayer;
 import com.hyeok.melon.MelonUtil.indexSearchData;
 import com.hyeok.melon.SearchData;
+import com.hyeok.melon.SocketUtil.RunCommand;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -58,8 +59,12 @@ public class ListFrame extends JFrame {
     }
 
     public void refreshTableData() {
+        /* refresh Table Data */
         setTableData();
         repaint();
+
+        /* if Client Socket exist call Playlist Update Method */
+        RunCommand.getInstance().execute(RunCommand.REFRESH_PLAYLIST);
     }
 
     private void setComponentSpace() {

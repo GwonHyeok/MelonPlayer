@@ -1,6 +1,7 @@
 package com.hyeok.melon.MelonUtil;
 
 import com.hyeok.melon.MelonSong;
+import com.hyeok.melon.SocketUtil.CommandSender;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 
@@ -23,6 +24,7 @@ public class MelonPlayer {
     private indexSearchData songData;
     private SongStatus songStatus;
     private Player player;
+    private CommandSender commandSender = new CommandSender();
 
     private enum SongStatus {RESUME, PAUSE, PLAY, FINISH}
 
@@ -97,6 +99,7 @@ public class MelonPlayer {
                 if (playerSeekListener != null) {
                     playerSeekListener.startSong(0, urlConn.getContentLength());
                 }
+                commandSender.sendSID(this.searchData.getSID());
                 final BufferedInputStream in = new BufferedInputStream(urlConn.getInputStream());
                 player = new Player(in);
                 while (songStatus != SongStatus.FINISH) {
@@ -145,6 +148,12 @@ public class MelonPlayer {
         }
     }
 
+    public void toggleSong() {
+        if (playerSeekListener != null) {
+            this.playerSeekListener.toggleSong();
+        }
+    }
+
     public void stopSong() {
         Log("Stop Song");
         if (playSongThread != null) {
@@ -163,6 +172,18 @@ public class MelonPlayer {
         this.playerSeekListener = playerSeekListener;
     }
 
+    public void callfindNextSong() {
+        if (this.playerSeekListener != null) {
+            this.playerSeekListener.findNextSong();
+        }
+    }
+
+    public void callfindPrevSong() {
+        if (this.playerSeekListener != null) {
+            this.playerSeekListener.findPrevSong();
+        }
+    }
+
     public interface MelonPlayerSeekListener {
         public void getPosition(int position);
 
@@ -173,5 +194,11 @@ public class MelonPlayer {
         public void initSong(String songName, String artistName);
 
         public void getAlbumartImage(BufferedImage albumartImage);
+
+        public void toggleSong();
+
+        public void findNextSong();
+
+        public void findPrevSong();
     }
 }

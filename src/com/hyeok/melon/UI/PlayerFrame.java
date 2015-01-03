@@ -6,6 +6,7 @@ import com.hyeok.melon.MelonUtil.DatabaseUtil;
 import com.hyeok.melon.MelonUtil.Log;
 import com.hyeok.melon.MelonUtil.MelonPlayer;
 import com.hyeok.melon.SearchData;
+import com.hyeok.melon.SocketUtil.SocketInit;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,6 +43,7 @@ public class PlayerFrame extends JFrame {
         setButtonListener();
         setSearchlistListener();
         setPlayerListener();
+        socketInit();
         setSize(340, 600);
     }
 
@@ -86,6 +88,27 @@ public class PlayerFrame extends JFrame {
                 backgroundPanel.setBackgroundImage(albumartImage);
                 invalidate();
                 repaint();
+            }
+
+            @Override
+            public void toggleSong() {
+                boolean isPlay = songStatus != SongStatus.PLAY;
+                if (isPlay) {
+                    MelonPlayer.getInstance().resumeSong();
+                } else {
+                    MelonPlayer.getInstance().pauseSong();
+                }
+                setPlayPauseButtonIcon(isPlay);
+            }
+
+            @Override
+            public void findNextSong() {
+                checkNextSong();
+            }
+
+            @Override
+            public void findPrevSong() {
+                checkPrevSong();
             }
         });
     }
@@ -203,6 +226,11 @@ public class PlayerFrame extends JFrame {
                 }
             }
         });
+    }
+
+    private void socketInit() {
+        SocketInit socketInit = new SocketInit();
+        socketInit.start();
     }
 
     private void setPlayPauseButtonIcon(boolean isPlay) {
